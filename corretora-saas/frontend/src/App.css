@@ -1,4 +1,5 @@
 
+
 #root {
   min-height: 100vh;
 }
@@ -70,10 +71,13 @@
   color: #8292a8;
 }
 
+/* make nav-menu positioned to allow absolute indicator */
 .nav-menu {
   display: grid;
   gap: 7px;
   margin-top: 12px;
+  position: relative; /* required for .sidebar-indicator */
+  overflow: auto; /* keep if menu becomes scrollable */
 }
 
 .nav-item {
@@ -85,6 +89,7 @@
   color: #c5d0df;
   font-size: 14px;
   text-decoration: none;
+  padding-left: 28px; /* room for indicator */
 }
 
 .nav-item.active,
@@ -95,6 +100,20 @@
 
 .nav-item.active {
   box-shadow: inset 3px 0 #60a5fa;
+}
+
+/* vertical indicator that follows hovered/focused/active item */
+.sidebar-indicator{
+  position: absolute;
+  left: 8px; /* distance from left edge of nav */
+  width: 6px;
+  height: 40px;
+  background: linear-gradient(180deg,#6ee7b7,#3b82f6);
+  border-radius: 6px;
+  transition: top .18s cubic-bezier(.2,.9,.2,1), height .18s, opacity .12s;
+  box-shadow: 0 6px 14px rgba(59,130,246,0.14);
+  pointer-events: none;
+  opacity: 0;
 }
 
 .sidebar-bottom {
@@ -361,6 +380,7 @@ tbody tr:last-child td {
 
   .nav-item {
     padding: 10px;
+    padding-left: 12px; /* reduce padding on mobile */
   }
 
   .main-content {
@@ -572,4 +592,4 @@ tbody tr:last-child td {
 .metric-number{letter-spacing:-1.2px}
 .nav-item:focus-visible,.activity-primary:focus-visible,.activity-filters button:focus-visible{outline:3px solid #aab4ff;outline-offset:2px}
 @media(max-width:760px){.sidebar{width:210px}.main-content{margin-left:210px}}
-@media(max-width:620px){.sidebar{position:relative;width:auto;inset:auto;padding:16px}.brand{padding-bottom:15px}.nav-menu{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar-bottom{display:none}.main-content{margin-left:0;padding:16px}}
+@media(max-width:620px){.sidebar{position:relative;width:auto;inset:auto;padding:16px}.brand{padding-bottom:15px}.nav-menu{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar-bottom{display:no[...]}
