@@ -4,7 +4,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Kanban from "./Kanban";
 import Activities from "./Activities";
-import QuoteCalculator from "@/components/QuoteCalculator";
+import QuoteCalculator from "./components/QuoteCalculator";
+import Clients from "./components/Clients";
+import Reports from "./components/Reports";
 import "./App.css";
 
 type HealthResponse = {
@@ -54,8 +56,8 @@ function App() {
   const [apiStatus, setApiStatus] = useState("Verificando...");
   const [apiMessage, setApiMessage] = useState("");
   const [paginaAtual, setPaginaAtual] = useState<
-    "dashboard" | "pipeline" | "activities" | "quote-calculator"
-  >(window.location.hash === "#pipeline" ? "pipeline" : window.location.hash === "#activities" ? "activities" : window.location.hash === "#quote-calculator" ? "quote-calculator" : "dashboard");
+    "dashboard" | "pipeline" | "activities" | "quote-calculator" | "clientes" | "relatorios"
+  >(window.location.hash === "#pipeline" ? "pipeline" : window.location.hash === "#activities" ? "activities" : window.location.hash === "#quote-calculator" ? "quote-calculator" : window.location.hash === "#clientes" ? "clientes" : window.location.hash === "#relatorios" ? "relatorios" : "dashboard");
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loadingLeads, setLoadingLeads] = useState(true);
@@ -72,7 +74,13 @@ function App() {
           ? "pipeline"
           : window.location.hash === "#activities"
           ? "activities"
-          : window.location.hash === "#quote-calculator" ? "quote-calculator" : "dashboard"
+          : window.location.hash === "#quote-calculator"
+          ? "quote-calculator"
+          : window.location.hash === "#clientes"
+          ? "clientes"
+          : window.location.hash === "#relatorios"
+          ? "relatorios"
+          : "dashboard"
       );
     };
 
@@ -123,9 +131,9 @@ function App() {
     (lead) => lead.status !== "CONVERTIDO" && lead.status !== "PERDIDO"
   ).length;
 
-  function navegarPara(pagina: "dashboard" | "pipeline" | "activities" | "quote-calculator") {
+  function navegarPara(pagina: "dashboard" | "pipeline" | "activities" | "quote-calculator" | "clientes" | "relatorios") {
     setPaginaAtual(pagina);
-    window.location.hash = pagina;
+    window.location.hash = `#${pagina}`;
   }
 
   // utility: position the vertical indicator inside the nav
@@ -269,21 +277,23 @@ function App() {
           </a>
 
           <a
-            className="nav-item"
+            className={`nav-item ${paginaAtual === "clientes" ? "active" : ""}`}
             href="#clientes"
+            onClick={() => navegarPara("clientes")}
             onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
             onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
-            aria-current={undefined}
+            aria-current={paginaAtual === "clientes" ? "page" : undefined}
           >
             ♧ <span>Clientes</span>
           </a>
 
           <a
-            className="nav-item"
+            className={`nav-item ${paginaAtual === "relatorios" ? "active" : ""}`}
             href="#relatorios"
+            onClick={() => navegarPara("relatorios")}
             onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
             onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
-            aria-current={undefined}
+            aria-current={paginaAtual === "relatorios" ? "page" : undefined}
           >
             ▤ <span>Relatórios</span>
           </a>
@@ -305,6 +315,10 @@ function App() {
           <Activities />
         ) : paginaAtual === "quote-calculator" ? (
           <QuoteCalculator />
+        ) : paginaAtual === "clientes" ? (
+          <Clients />
+        ) : paginaAtual === "relatorios" ? (
+          <Reports />
         ) : (
           <>
             <header className="topbar">
