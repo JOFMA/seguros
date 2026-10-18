@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import Kanban from "./Kanban";
 import Activities from "./Activities";
-import Policies from "./Policies";
+import QuoteCalculator from "@/components/QuoteCalculator";
 import "./App.css";
 
 type HealthResponse = {
@@ -54,14 +54,14 @@ function App() {
   const [apiStatus, setApiStatus] = useState("Verificando...");
   const [apiMessage, setApiMessage] = useState("");
   const [paginaAtual, setPaginaAtual] = useState<
-    "dashboard" | "pipeline" | "activities" | "policies"
-  >(window.location.hash === "#pipeline" ? "pipeline" : window.location.hash === "#activities" ? "activities" : window.location.hash === "#policies" ? "policies" : "dashboard");
+    "dashboard" | "pipeline" | "activities" | "quote-calculator"
+  >(window.location.hash === "#pipeline" ? "pipeline" : window.location.hash === "#activities" ? "activities" : window.location.hash === "#quote-calculator" ? "quote-calculator" : "dashboard");
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loadingLeads, setLoadingLeads] = useState(true);
   const [leadsError, setLeadsError] = useState("");
 
-  // refs for dynamic sidebar indicator (kept for compatibility)
+  // refs for dynamic sidebar indicator
   const menuRef = useRef<HTMLElement | null>(null);
   const indicatorRef = useRef<HTMLDivElement | null>(null);
 
@@ -70,7 +70,9 @@ function App() {
       setPaginaAtual(
         window.location.hash === "#pipeline"
           ? "pipeline"
-          : window.location.hash === "#activities" ? "activities" : window.location.hash === "#policies" ? "policies" : "dashboard"
+          : window.location.hash === "#activities"
+          ? "activities"
+          : window.location.hash === "#quote-calculator" ? "quote-calculator" : "dashboard"
       );
     };
 
@@ -110,16 +112,23 @@ function App() {
   }, []);
 
   const totalLeads = leads.length;
-  const leadsEmNegociacao = leads.filter((lead) => lead.status === "EM_NEGOCIACAO").length;
-  const leadsConvertidos = leads.filter((lead) => lead.status === "CONVERTIDO").length;
-  const leadsAbertos = leads.filter((lead) => lead.status !== "CONVERTIDO" && lead.status !== "PERDIDO").length;
 
-  function navegarPara(pagina: "dashboard" | "pipeline" | "activities" | "policies") {
+  const leadsEmNegociacao = leads.filter(
+    (lead) => lead.status === "EM_NEGOCIACAO"
+  ).length;
+
+  const leadsConvertidos = leads.filter((lead) => lead.status === "CONVERTIDO").length;
+
+  const leadsAbertos = leads.filter(
+    (lead) => lead.status !== "CONVERTIDO" && lead.status !== "PERDIDO"
+  ).length;
+
+  function navegarPara(pagina: "dashboard" | "pipeline" | "activities" | "quote-calculator") {
     setPaginaAtual(pagina);
     window.location.hash = pagina;
   }
 
-  // minimal indicator placement (no heavy logic here)
+  // utility: position the vertical indicator inside the nav
   function placeIndicator(el: HTMLElement | null) {
     if (!el || !menuRef.current || !indicatorRef.current) return;
     const rect = el.getBoundingClientRect();
@@ -130,6 +139,44 @@ function App() {
     indicatorRef.current.style.opacity = "1";
   }
 
+  // keyboard navigation for the sidebar (Arrow keys, Home/End, Enter/Space)
+  function handleNavKeyDown(e: any) {
+    const menu = menuRef.current;
+    if (!menu) return;
+    const items = Array.from(menu.querySelectorAll<HTMLElement>(".nav-item"));
+    if (items.length === 0) return;
+    const activeEl = document.activeElement as HTMLElement | null;
+    let idx = items.indexOf(activeEl as HTMLElement);
+    if (idx === -1) {
+      idx = items.findIndex((i) => i.classList.contains("active"));
+      if (idx === -1) idx = 0;
+    }
+
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      const next = items[(idx + 1) % items.length];
+      next.focus();
+      placeIndicator(next);
+      e.preventDefault();
+    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      const prev = items[(idx - 1 + items.length) % items.length];
+      prev.focus();
+      placeIndicator(prev);
+      e.preventDefault();
+    } else if (e.key === "Home") {
+      items[0].focus();
+      placeIndicator(items[0]);
+      e.preventDefault();
+    } else if (e.key === "End") {
+      items[items.length - 1].focus();
+      placeIndicator(items[items.length - 1]);
+      e.preventDefault();
+    } else if (e.key === "Enter" || e.key === " ") {
+      (document.activeElement as HTMLElement)?.click();
+      e.preventDefault();
+    }
+  }
+
+  // ensure indicator follows the active item on route change / resize
   useEffect(() => {
     const menu = menuRef.current;
     if (!menu) return;
@@ -139,6 +186,18 @@ function App() {
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, [paginaAtual]);
+
+  useEffect(() => {
+    // If the menu is scrollable, reposition indicator when scrolling
+    const menu = menuRef.current;
+    if (!menu) return;
+    const onScroll = () => {
+      const active = (menu.querySelector('.nav-item.active') as HTMLElement) ?? (menu.querySelector('.nav-item') as HTMLElement);
+      placeIndicator(active ?? null);
+    };
+    menu.addEventListener('scroll', onScroll);
+    return () => menu.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <div className="app-shell">
@@ -153,28 +212,79 @@ function App() {
 
         <p className="nav-label">MENU PRINCIPAL</p>
 
-        <nav className="nav-menu" ref={menuRef} role="navigation" aria-label="Menu Principal" tabIndex={0}>
-          <a className={`nav-item ${paginaAtual === "dashboard" ? "active" : ""}`} href="#dashboard" onClick={() => navegarPara("dashboard")} onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)} onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)} aria-current={paginaAtual === "dashboard" ? "page" : undefined}>
+        <nav
+          className="nav-menu"
+          ref={menuRef}
+          role="navigation"
+          aria-label="Menu Principal"
+          tabIndex={0}
+          onKeyDown={handleNavKeyDown}
+          onMouseLeave={() => {
+            const active = (menuRef.current?.querySelector('.nav-item.active') as HTMLElement) ?? (menuRef.current?.querySelector('.nav-item') as HTMLElement);
+            placeIndicator(active ?? null);
+          }}
+        >
+          <a
+            className={`nav-item ${paginaAtual === "dashboard" ? "active" : ""}`}
+            href="#dashboard"
+            onClick={() => navegarPara("dashboard")}
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={paginaAtual === "dashboard" ? "page" : undefined}
+          >
             ▦ <span>Dashboard</span>
           </a>
 
-          <a className={`nav-item ${paginaAtual === "pipeline" ? "active" : ""}`} href="#pipeline" onClick={() => navegarPara("pipeline")} onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)} onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)} aria-current={paginaAtual === "pipeline" ? "page" : undefined}>
+          <a
+            className={`nav-item ${paginaAtual === "pipeline" ? "active" : ""}`}
+            href="#pipeline"
+            onClick={() => navegarPara("pipeline")}
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={paginaAtual === "pipeline" ? "page" : undefined}
+          >
             ⇄ <span>Funil de vendas</span>
           </a>
 
-          <a className={`nav-item ${paginaAtual === "activities" ? "active" : ""}`} href="#activities" onClick={() => navegarPara("activities")} onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)} onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)} aria-current={paginaAtual === "activities" ? "page" : undefined}>
+          <a
+            className={`nav-item ${paginaAtual === "activities" ? "active" : ""}`}
+            href="#activities"
+            onClick={() => navegarPara("activities")}
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={paginaAtual === "activities" ? "page" : undefined}
+          >
             ◷ <span>Atividades</span>
           </a>
 
-          <a className={`nav-item ${paginaAtual === "policies" ? "active" : ""}`} href="#policies" onClick={() => navegarPara("policies")} onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)} onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)} aria-current={paginaAtual === "policies" ? "page" : undefined}>
-            📄 <span>Apólices</span>
+          <a
+            className={`nav-item ${paginaAtual === "quote-calculator" ? "active" : ""}`}
+            href="#quote-calculator"
+            onClick={() => navegarPara("quote-calculator")}
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={paginaAtual === "quote-calculator" ? "page" : undefined}
+          >
+            💬 <span>Simulador</span>
           </a>
 
-          <a className="nav-item" href="#clientes" onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)} onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)} aria-current={undefined}>
+          <a
+            className="nav-item"
+            href="#clientes"
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={undefined}
+          >
             ♧ <span>Clientes</span>
           </a>
 
-          <a className="nav-item" href="#relatorios" onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)} onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)} aria-current={undefined}>
+          <a
+            className="nav-item"
+            href="#relatorios"
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={undefined}
+          >
             ▤ <span>Relatórios</span>
           </a>
 
@@ -189,12 +299,12 @@ function App() {
       </aside>
 
       <main className="main-content" id={paginaAtual}>
-        {paginaAtual === "policies" ? (
-          <Policies />
-        ) : paginaAtual === "pipeline" ? (
+        {paginaAtual === "pipeline" ? (
           <Kanban />
         ) : paginaAtual === "activities" ? (
           <Activities />
+        ) : paginaAtual === "quote-calculator" ? (
+          <QuoteCalculator />
         ) : (
           <>
             <header className="topbar">
