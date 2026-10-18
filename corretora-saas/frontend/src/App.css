@@ -1,0 +1,575 @@
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background: #f6f8fb;
+  color: #182230;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.sidebar {
+  width: 248px;
+  position: fixed;
+  inset: 0 auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 18px 20px;
+  background: #14243a;
+  color: #fff;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 8px 36px;
+}
+
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: #3b82f6;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.brand strong,
+.brand span,
+.user-profile strong,
+.user-profile span {
+  display: block;
+}
+
+.brand strong {
+  font-size: 20px;
+}
+
+.brand span,
+.user-profile span {
+  margin-top: 3px;
+  color: #a8b5c7;
+  font-size: 12px;
+}
+
+.nav-label,
+.sidebar-bottom p,
+.eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.nav-label {
+  padding: 0 10px;
+  color: #8292a8;
+}
+
+.nav-menu {
+  display: grid;
+  gap: 7px;
+  margin-top: 12px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 13px;
+  border-radius: 9px;
+  color: #c5d0df;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.nav-item.active,
+.nav-item:hover {
+  background: #263b57;
+  color: #fff;
+}
+
+.nav-item.active {
+  box-shadow: inset 3px 0 #60a5fa;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  padding: 16px 9px 0;
+  border-top: 1px solid #304057;
+  color: #a8b5c7;
+  font-size: 12px;
+}
+
+.sidebar-bottom p {
+  color: #8292a8;
+  font-size: 9px;
+}
+
+.connection-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 7px;
+  border-radius: 50%;
+  background: #4ade80;
+}
+
+.main-content {
+  margin-left: 248px;
+  padding: 30px 38px;
+  max-width: 1700px;
+}
+
+.topbar,
+.user-profile,
+.section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  color: #64748b;
+}
+
+h1,
+h2,
+p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-size: 28px;
+  letter-spacing: -0.8px;
+}
+
+.user-profile {
+  justify-content: flex-start;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.user-profile strong {
+  font-size: 13px;
+}
+
+.user-profile span {
+  color: #64748b;
+}
+
+.welcome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 30px;
+  padding: 28px 30px;
+  border-radius: 16px;
+  background: linear-gradient(115deg, #e5efff, #f0f5ff);
+}
+
+.welcome h2 {
+  margin-bottom: 8px;
+  font-size: 23px;
+  letter-spacing: -0.5px;
+}
+
+.welcome p:last-child {
+  margin-bottom: 0;
+  color: #53647a;
+  font-size: 13px;
+}
+
+.welcome-symbol {
+  display: grid;
+  place-items: center;
+  flex: 0 0 58px;
+  height: 58px;
+  border-radius: 17px;
+  background: #fff;
+  color: #2563eb;
+  font-size: 32px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.metric-card,
+.table-card {
+  border-color: #e7ebf1 !important;
+  border-radius: 13px !important;
+  background: #fff !important;
+  box-shadow: 0 2px 8px rgb(15 23 42 / 3%) !important;
+}
+
+.metric-card [data-slot="card-content"] {
+  display: grid;
+  gap: 10px;
+  padding: 20px;
+}
+
+.metric-label {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.metric-number {
+  font-size: 30px;
+  letter-spacing: -1px;
+}
+
+.metric-note {
+  color: #7b8798;
+  font-size: 11px;
+}
+
+.leads-section {
+  margin-top: 34px;
+}
+
+.section-heading {
+  margin-bottom: 18px;
+}
+
+.section-heading h2 {
+  margin-bottom: 6px;
+  font-size: 18px;
+}
+
+.section-heading p {
+  margin-bottom: 0;
+  color: #748094;
+  font-size: 12px;
+}
+
+.primary-button {
+  border: 0;
+  border-radius: 9px;
+  padding: 11px 15px;
+  background: #2563eb;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background: #1d4ed8;
+}
+
+.table-card [data-slot="card-content"] {
+  padding: 0;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 12px;
+}
+
+th,
+td {
+  padding: 16px 20px;
+  border-bottom: 1px solid #edf0f5;
+  white-space: nowrap;
+}
+
+th {
+  background: #fafbfd;
+  color: #718096;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.lead-name {
+  color: #27364a;
+  font-weight: 700;
+}
+
+.dashboard-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 28px;
+  color: #8792a2;
+  font-size: 10px;
+}
+
+@media (max-width: 1100px) {
+  .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .main-content {
+    padding: 25px;
+  }
+}
+
+@media (max-width: 700px) {
+  .sidebar {
+    position: static;
+    width: auto;
+    padding: 18px;
+  }
+
+  .brand {
+    padding-bottom: 20px;
+  }
+
+  .nav-label,
+  .sidebar-bottom {
+    display: none;
+  }
+
+  .nav-menu {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 0;
+  }
+
+  .nav-item {
+    padding: 10px;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 22px 16px;
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+
+  .user-profile {
+    gap: 8px;
+  }
+
+  .user-profile strong {
+    font-size: 11px;
+  }
+
+  .welcome {
+    padding: 22px;
+  }
+
+  .welcome h2 {
+    font-size: 20px;
+  }
+
+  .metrics-grid {
+    gap: 10px;
+  }
+
+  .metric-card [data-slot="card-content"] {
+    padding: 14px;
+  }
+
+  .metric-number {
+    font-size: 25px;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+  }
+
+  .dashboard-footer {
+    flex-direction: column;
+  }
+}
+
+
+/* Kanban - Funil de vendas */
+.kanban-page {
+  margin-top: 10px;
+}
+
+.kanban-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 26px;
+}
+
+.kanban-header h1 {
+  margin-bottom: 10px;
+}
+
+.kanban-description {
+  color: #748094;
+  font-size: 13px;
+}
+
+.kanban-board {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(245px, 1fr));
+  gap: 16px;
+  overflow-x: auto;
+  align-items: start;
+  padding: 4px 2px 18px;
+}
+
+.kanban-column {
+  min-width: 245px;
+  min-height: 300px;
+  padding: 13px;
+  border: 1px solid #e7ebf1;
+  border-radius: 13px;
+  background: #edf1f7;
+}
+
+.kanban-column-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.kanban-column-header h2 {
+  margin: 0;
+  color: #344256;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.kanban-column-header > span {
+  display: grid;
+  place-items: center;
+  min-width: 25px;
+  height: 25px;
+  padding: 0 7px;
+  border-radius: 8px;
+  background: #fff;
+  color: #53647a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.kanban-cards {
+  display: grid;
+  gap: 10px;
+}
+
+.kanban-lead-card {
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  box-shadow: 0 2px 5px rgb(15 23 42 / 4%) !important;
+}
+
+.kanban-lead-card [data-slot="card-content"] {
+  display: grid;
+  gap: 9px;
+  padding: 14px;
+}
+
+.kanban-lead-card strong,
+.kanban-lost-list strong {
+  color: #27364a;
+  font-size: 13px;
+}
+
+.kanban-lead-card span,
+.kanban-lost-list span {
+  overflow-wrap: anywhere;
+  color: #718096;
+  font-size: 11px;
+}
+
+.kanban-empty {
+  padding: 14px 5px;
+  color: #8792a2;
+  font-size: 11px;
+  text-align: center;
+}
+
+.kanban-lost-section {
+  margin-top: 24px;
+  padding: 18px;
+  border: 1px solid #e7ebf1;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.kanban-lost-section h2 {
+  margin-bottom: 14px;
+  font-size: 15px;
+}
+
+.kanban-lost-section p {
+  color: #748094;
+  font-size: 12px;
+}
+
+.kanban-lost-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.kanban-lost-list [data-slot="card-content"] {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+}
+
+@media (max-width: 700px) {
+  .kanban-header {
+    align-items: center;
+  }
+
+  .kanban-board {
+    grid-template-columns: repeat(6, 245px);
+  }
+}
+
+/* Visual refinement: premium, calmer workspace */
+.app-shell{background:#f5f7fb;color:#17243b;font-family:'Geist Variable',Inter,ui-sans-serif,system-ui,sans-serif}
+.sidebar{background:#111d35;border-right:1px solid #26334a;box-shadow:8px 0 28px #10203b08}
+.brand-icon{background:linear-gradient(145deg,#6574e8,#4654c7);box-shadow:0 6px 16px #4d5dd64d;border-radius:14px}
+.nav-item{border-radius:10px;transition:background .18s ease,color .18s ease}
+.nav-item.active{background:linear-gradient(90deg,#34466a,#293b5b);box-shadow:inset 3px 0 #8d9bff;color:white}
+.main-content{background:#f5f7fb}
+.topbar{margin-bottom:26px}
+.topbar h1{letter-spacing:-1px}
+.welcome{border-radius:18px;background:radial-gradient(circle at 85% 15%,#5366ce 0,transparent 34%),linear-gradient(120deg,#202f54,#344b83);box-shadow:0 12px 28px #253c701f}
+.welcome h2{letter-spacing:-.7px}
+.metric-card,.table-card{border:1px solid #e8ebf2!important;border-radius:15px!important;box-shadow:0 5px 22px #182c4c06!important}
+.metric-number{letter-spacing:-1.2px}
+.nav-item:focus-visible,.activity-primary:focus-visible,.activity-filters button:focus-visible{outline:3px solid #aab4ff;outline-offset:2px}
+@media(max-width:760px){.sidebar{width:210px}.main-content{margin-left:210px}}
+@media(max-width:620px){.sidebar{position:relative;width:auto;inset:auto;padding:16px}.brand{padding-bottom:15px}.nav-menu{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar-bottom{display:none}.main-content{margin-left:0;padding:16px}}

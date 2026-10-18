@@ -1,0 +1,110 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum AtividadeTipo {
+  LIGACAO
+  WHATSAPP
+  EMAIL
+  REUNIAO
+  ENVIO_PROPOSTA
+  RETORNO
+  OUTRO
+}
+
+enum AtividadeStatus {
+  PENDENTE
+  CONCLUIDA
+  CANCELADA
+}
+
+enum LeadStatus {
+  NOVO
+  CONTATADO
+  EM_ATENDIMENTO
+  PROPOSTA_ENVIADA
+  EM_NEGOCIACAO
+  CONVERTIDO
+  PERDIDO
+}
+
+model Corretora {
+  id        String   @id @default(cuid())
+  nome      String
+  email     String?  @unique
+  telefone  String?
+  ativa     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  usuarios Usuario[]
+  leads    Lead[]
+  atividades Atividade[]
+}
+
+model Usuario {
+  id         String   @id @default(cuid())
+  nome       String
+  email      String   @unique
+  senhaHash  String
+  ativo      Boolean  @default(true)
+  createdAt  DateTime @default(now())
+
+  corretoraId String
+  corretora   Corretora @relation(fields: [corretoraId], references: [id])
+
+  leadsAtribuidos Lead[] @relation("ResponsavelLead")
+}
+
+model Lead {
+  id          String     @id @default(cuid())
+  nome        String
+  telefone    String?
+  email       String?
+  produto     String?
+  origem      String     @default("MANUAL")
+  status      LeadStatus @default(NOVO)
+  metaLeadId  String?    @unique
+  recebidoEm  DateTime   @default(now())
+  proximaAcao DateTime?
+  observacoes String?    @db.Text
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  corretoraId String
+  corretora   Corretora @relation(fields: [corretoraId], references: [id])
+
+  responsavelId String?
+  responsavel   Usuario? @relation("ResponsavelLead", fields: [responsavelId], references: [id])
+
+  atividades Atividade[]
+
+  @@index([corretoraId, status])
+  @@index([corretoraId, recebidoEm])
+}
+
+model Atividade {
+  id          String          @id @default(cuid())
+  titulo      String
+  descricao   String?         @db.Text
+  tipo        AtividadeTipo   @default(RETORNO)
+  status      AtividadeStatus @default(PENDENTE)
+  agendadaPara DateTime
+  concluidaEm DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  corretoraId String
+  corretora   Corretora       @relation(fields: [corretoraId], references: [id])
+  leadId      String
+  lead        Lead            @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([corretoraId, status, agendadaPara])
+  @@index([leadId, agendadaPara])
+}
