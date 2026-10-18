@@ -1,5 +1,4 @@
-
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { api } from "./services/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -55,13 +54,15 @@ function App() {
   const [apiMessage, setApiMessage] = useState("");
   const [paginaAtual, setPaginaAtual] = useState<
     "dashboard" | "pipeline" | "activities"
-  >(
-    window.location.hash === "#pipeline" ? "pipeline" : window.location.hash === "#activities" ? "activities" : "dashboard"
-  );
+  >(window.location.hash === "#pipeline" ? "pipeline" : window.location.hash === "#activities" ? "activities" : "dashboard");
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [loadingLeads, setLoadingLeads] = useState(true);
   const [leadsError, setLeadsError] = useState("");
+
+  // refs for dynamic sidebar indicator
+  const menuRef = useRef<HTMLElement | null>(null);
+  const indicatorRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const sincronizarPagina = () => {
@@ -113,20 +114,50 @@ function App() {
     (lead) => lead.status === "EM_NEGOCIACAO"
   ).length;
 
-  const leadsConvertidos = leads.filter(
-    (lead) => lead.status === "CONVERTIDO"
-  ).length;
+  const leadsConvertidos = leads.filter((lead) => lead.status === "CONVERTIDO").length;
 
   const leadsAbertos = leads.filter(
-    (lead) =>
-      lead.status !== "CONVERTIDO" &&
-      lead.status !== "PERDIDO"
+    (lead) => lead.status !== "CONVERTIDO" && lead.status !== "PERDIDO"
   ).length;
 
   function navegarPara(pagina: "dashboard" | "pipeline" | "activities") {
     setPaginaAtual(pagina);
     window.location.hash = pagina;
   }
+
+  // utility: position the vertical indicator inside the nav
+  function placeIndicator(el: HTMLElement | null) {
+    if (!el || !menuRef.current || !indicatorRef.current) return;
+    const rect = el.getBoundingClientRect();
+    const parentRect = menuRef.current.getBoundingClientRect();
+    const top = rect.top - parentRect.top + menuRef.current.scrollTop;
+    indicatorRef.current.style.top = `${top}px`;
+    indicatorRef.current.style.height = `${rect.height}px`;
+    indicatorRef.current.style.opacity = "1";
+  }
+
+  // ensure indicator follows the active item on route change / resize
+  useEffect(() => {
+    const menu = menuRef.current;
+    if (!menu) return;
+    const active = (menu.querySelector('.nav-item.active') as HTMLElement) ?? (menu.querySelector('.nav-item') as HTMLElement);
+    placeIndicator(active ?? null);
+    const onResize = () => placeIndicator((menu.querySelector('.nav-item.active') as HTMLElement) ?? (menu.querySelector('.nav-item') as HTMLElement));
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, [paginaAtual]);
+
+  useEffect(() => {
+    // If the menu is scrollable, reposition indicator when scrolling
+    const menu = menuRef.current;
+    if (!menu) return;
+    const onScroll = () => {
+      const active = (menu.querySelector('.nav-item.active') as HTMLElement) ?? (menu.querySelector('.nav-item') as HTMLElement);
+      placeIndicator(active ?? null);
+    };
+    menu.addEventListener('scroll', onScroll);
+    return () => menu.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <div className="app-shell">
@@ -141,38 +172,63 @@ function App() {
 
         <p className="nav-label">MENU PRINCIPAL</p>
 
-        <nav className="nav-menu">
+        <nav
+          className="nav-menu"
+          ref={menuRef}
+          onMouseLeave={() => {
+            const active = (menuRef.current?.querySelector('.nav-item.active') as HTMLElement) ?? (menuRef.current?.querySelector('.nav-item') as HTMLElement);
+            placeIndicator(active ?? null);
+          }}
+        >
           <a
-            className={`nav-item ${
-              paginaAtual === "dashboard" ? "active" : ""
-            }`}
+            className={`nav-item ${paginaAtual === "dashboard" ? "active" : ""}`}
             href="#dashboard"
             onClick={() => navegarPara("dashboard")}
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
           >
             ▦ <span>Dashboard</span>
           </a>
 
           <a
-            className={`nav-item ${
-              paginaAtual === "pipeline" ? "active" : ""
-            }`}
+            className={`nav-item ${paginaAtual === "pipeline" ? "active" : ""}`}
             href="#pipeline"
             onClick={() => navegarPara("pipeline")}
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
           >
             ⇄ <span>Funil de vendas</span>
           </a>
 
-          <a className={`nav-item ${paginaAtual === "activities" ? "active" : ""}`} href="#activities" onClick={() => navegarPara("activities")}>
+          <a
+            className={`nav-item ${paginaAtual === "activities" ? "active" : ""}`}
+            href="#activities"
+            onClick={() => navegarPara("activities")}
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+          >
             ◷ <span>Atividades</span>
           </a>
 
-          <a className="nav-item" href="#clientes">
+          <a
+            className="nav-item"
+            href="#clientes"
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+          >
             ♧ <span>Clientes</span>
           </a>
 
-          <a className="nav-item" href="#relatorios">
+          <a
+            className="nav-item"
+            href="#relatorios"
+            onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+          >
             ▤ <span>Relatórios</span>
           </a>
+
+          <div ref={indicatorRef} className="sidebar-indicator" aria-hidden="true" />
         </nav>
 
         <div className="sidebar-bottom">
@@ -221,48 +277,32 @@ function App() {
               <Card className="metric-card">
                 <CardContent>
                   <span className="metric-label">Leads cadastrados</span>
-                  <strong className="metric-number">
-                    {totalLeads}
-                  </strong>
-                  <span className="metric-note">
-                    Total retornado pela API
-                  </span>
+                  <strong className="metric-number">{totalLeads}</strong>
+                  <span className="metric-note">Total retornado pela API</span>
                 </CardContent>
               </Card>
 
               <Card className="metric-card">
                 <CardContent>
                   <span className="metric-label">Em negociação</span>
-                  <strong className="metric-number">
-                    {leadsEmNegociacao}
-                  </strong>
-                  <span className="metric-note">
-                    Leads nessa etapa
-                  </span>
+                  <strong className="metric-number">{leadsEmNegociacao}</strong>
+                  <span className="metric-note">Leads nessa etapa</span>
                 </CardContent>
               </Card>
 
               <Card className="metric-card">
                 <CardContent>
                   <span className="metric-label">Em andamento</span>
-                  <strong className="metric-number">
-                    {leadsAbertos}
-                  </strong>
-                  <span className="metric-note">
-                    Oportunidades ainda não concluídas
-                  </span>
+                  <strong className="metric-number">{leadsAbertos}</strong>
+                  <span className="metric-note">Oportunidades ainda não concluídas</span>
                 </CardContent>
               </Card>
 
               <Card className="metric-card">
                 <CardContent>
                   <span className="metric-label">Vendas concluídas</span>
-                  <strong className="metric-number">
-                    {leadsConvertidos}
-                  </strong>
-                  <span className="metric-note">
-                    Leads convertidos
-                  </span>
+                  <strong className="metric-number">{leadsConvertidos}</strong>
+                  <span className="metric-note">Leads convertidos</span>
                 </CardContent>
               </Card>
             </section>
@@ -271,9 +311,7 @@ function App() {
               <div className="section-heading">
                 <div>
                   <h2>Leads recentes</h2>
-                  <p>
-                    Acompanhe as oportunidades mais recentes.
-                  </p>
+                  <p>Acompanhe as oportunidades mais recentes.</p>
                 </div>
               </div>
 
@@ -300,23 +338,14 @@ function App() {
                         <tbody>
                           {leads.map((lead) => (
                             <tr key={lead.id}>
-                              <td className="lead-name">
-                                {lead.nome}
-                              </td>
+                              <td className="lead-name">{lead.nome}</td>
+
+                              <td>{lead.produto || "Não informado"}</td>
+
+                              <td>{lead.responsavel?.nome || "Não atribuído"}</td>
 
                               <td>
-                                {lead.produto || "Não informado"}
-                              </td>
-
-                              <td>
-                                {lead.responsavel?.nome ||
-                                  "Não atribuído"}
-                              </td>
-
-                              <td>
-                                <Badge variant="secondary">
-                                  {formatStatus(lead.status)}
-                                </Badge>
+                                <Badge variant="secondary">{formatStatus(lead.status)}</Badge>
                               </td>
                             </tr>
                           ))}
@@ -330,9 +359,7 @@ function App() {
 
             <footer className="dashboard-footer">
               <span>Segs · Gestão de corretoras</span>
-              <span>
-                {apiMessage || "Verificando API..."}
-              </span>
+              <span>{apiMessage || "Verificando API..."}</span>
             </footer>
           </>
         )}
