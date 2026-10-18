@@ -167,7 +167,7 @@ function App() {
           </a>
 
           <a className={`nav-item ${paginaAtual === "policies" ? "active" : ""}`} href="#policies" onClick={() => navegarPara("policies")} onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)} onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)} aria-current={paginaAtual === "policies" ? "page" : undefined}>
-            🗂️ <span>Apólices</span>
+            📄 <span>Apólices</span>
           </a>
 
           <a className="nav-item" href="#clientes" onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)} onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)} aria-current={undefined}>

@@ -46,6 +46,12 @@ export default function PolicyForm({ open, initial, onClose, onSaved, mode = "cr
     getInsuranceCompanies().then(setCompanies);
     setForm(defaultState(initial));
     setErrors({});
+    // focus management: focus first input after open
+    const t = setTimeout(() => {
+      const el = document.querySelector('.policy-modal input');
+      (el as HTMLElement | null)?.focus();
+    }, 50);
+    return () => clearTimeout(t);
   }, [open, initial]);
 
   function setField<K extends keyof FormState>(k: K, v: FormState[K]) {
@@ -104,93 +110,96 @@ export default function PolicyForm({ open, initial, onClose, onSaved, mode = "cr
     }
   }
 
+  // close on Escape
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose(); }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open, onClose]);
+
   if (!open) return null;
 
+  // Use the same modal classes as Activities for consistent look
   return (
-    <div className="modal-backdrop" role="dialog" aria-modal="true">
-      <Card className="policy-modal-card">
-        <CardContent>
-          <div className="modal-header">
-            <h3>{mode === "create" ? "Nova Apólice" : mode === "edit" ? "Editar Apólice" : "Renovar Apólice"}</h3>
-            <button className="close-btn" onClick={onClose} aria-label="Fechar">✕</button>
-          </div>
+    <div className="activity-modal-backdrop" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}>
+      <form className="activity-modal policy-modal" onSubmit={submit} noValidate>
+        <div className="modal-header">
+          <h3>{mode === "create" ? "Nova Apólice" : mode === "edit" ? "Editar Apólice" : "Renovar Apólice"}</h3>
+          <button type="button" className="close-btn" onClick={onClose} aria-label="Fechar">✕</button>
+        </div>
 
-          <form className="policy-form" onSubmit={submit} noValidate>
-            {errors.form && <div className="form-error">{errors.form}</div>}
+        <div className="policy-form-grid">
+          <label>
+            Nome do Segurado
+            <input value={form.clientName} onChange={(e) => setField("clientName", e.target.value)} />
+            {errors.clientName && <small className="field-error">{errors.clientName}</small>}
+          </label>
 
-            <label>
-              Nome do Segurado
-              <input value={form.clientName} onChange={(e) => setField("clientName", e.target.value)} />
-              {errors.clientName && <small className="field-error">{errors.clientName}</small>}
-            </label>
+          <label>
+            CPF / CNPJ
+            <input value={form.clientDocument} onChange={(e) => setField("clientDocument", e.target.value)} />
+            {errors.clientDocument && <small className="field-error">{errors.clientDocument}</small>}
+          </label>
 
-            <label>
-              CPF / CNPJ
-              <input value={form.clientDocument} onChange={(e) => setField("clientDocument", e.target.value)} />
-              {errors.clientDocument && <small className="field-error">{errors.clientDocument}</small>}
-            </label>
+          <label>
+            Seguradora
+            <select value={form.companyId} onChange={(e) => setField("companyId", e.target.value)}>
+              <option value="">— selecione —</option>
+              {companies.map((c) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+            {errors.companyId && <small className="field-error">{errors.companyId}</small>}
+          </label>
 
-            <label>
-              Seguradora
-              <select value={form.companyId} onChange={(e) => setField("companyId", e.target.value)}>
-                <option value="">— selecione —</option>
-                {companies.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
-                ))}
-              </select>
-              {errors.companyId && <small className="field-error">{errors.companyId}</small>}
-            </label>
+          <label>
+            Ramos / Produto
+            <select value={form.product} onChange={(e) => setField("product", e.target.value as InsuranceCategory)}>
+              <option value="AUTO">Auto</option>
+              <option value="LIFE">Vida</option>
+              <option value="RESIDENTIAL">Residencial</option>
+              <option value="BUSINESS">Empresarial</option>
+            </select>
+          </label>
 
-            <label>
-              Ramos / Produto
-              <select value={form.product} onChange={(e) => setField("product", e.target.value as InsuranceCategory)}>
-                <option value="AUTO">Auto</option>
-                <option value="LIFE">Vida</option>
-                <option value="RESIDENTIAL">Residencial</option>
-                <option value="BUSINESS">Empresarial</option>
-              </select>
-            </label>
+          <label>
+            Nº da Apólice
+            <input value={form.policyNumber} onChange={(e) => setField("policyNumber", e.target.value)} />
+            {errors.policyNumber && <small className="field-error">{errors.policyNumber}</small>}
+          </label>
 
-            <label>
-              Nº da Apólice
-              <input value={form.policyNumber} onChange={(e) => setField("policyNumber", e.target.value)} />
-              {errors.policyNumber && <small className="field-error">{errors.policyNumber}</small>}
-            </label>
+          <label>
+            Vigência início
+            <input type="date" value={form.startDate} onChange={(e) => setField("startDate", e.target.value)} />
+            {errors.startDate && <small className="field-error">{errors.startDate}</small>}
+          </label>
 
-            <div className="row">
-              <label>
-                Vigência início
-                <input type="date" value={form.startDate} onChange={(e) => setField("startDate", e.target.value)} />
-                {errors.startDate && <small className="field-error">{errors.startDate}</small>}
-              </label>
+          <label>
+            Vigência fim
+            <input type="date" value={form.endDate} onChange={(e) => setField("endDate", e.target.value)} />
+            {errors.endDate && <small className="field-error">{errors.endDate}</small>}
+          </label>
 
-              <label>
-                Vigência fim
-                <input type="date" value={form.endDate} onChange={(e) => setField("endDate", e.target.value)} />
-                {errors.endDate && <small className="field-error">{errors.endDate}</small>}
-              </label>
-            </div>
+          <label>
+            Valor do prêmio (R$)
+            <input type="number" min="0" step="0.01" value={form.premium} onChange={(e) => setField("premium", e.target.value)} />
+            {errors.premium && <small className="field-error">{errors.premium}</small>}
+          </label>
 
-            <label>
-              Valor do prêmio (R$)
-              <input type="number" min="0" step="0.01" value={form.premium} onChange={(e) => setField("premium", e.target.value)} />
-              {errors.premium && <small className="field-error">{errors.premium}</small>}
-            </label>
+          <label className="full">
+            Observações
+            <textarea value={form.notes} onChange={(e) => setField("notes", e.target.value)} />
+          </label>
+        </div>
 
-            <label>
-              Observações
-              <textarea value={form.notes} onChange={(e) => setField("notes", e.target.value)} />
-            </label>
+        {errors.form && <div className="form-error">{errors.form}</div>}
 
-            <div className="modal-actions">
-              <button type="button" className="secondary-button" onClick={onClose} disabled={saving}>Cancelar</button>
-              <button type="submit" className="primary-button" disabled={saving}>
-                {saving ? "Salvando..." : mode === "renew" ? "Confirmar Renovação" : "Salvar Apólice"}
-              </button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
+        <div className="modal-actions">
+          <button type="button" className="secondary-button" onClick={onClose} disabled={saving}>Cancelar</button>
+          <button type="submit" className="primary-button" disabled={saving}>{saving ? "Salvando..." : mode === "renew" ? "Confirmar Renovação" : "Salvar Apólice"}</button>
+        </div>
+      </form>
     </div>
   );
 }
