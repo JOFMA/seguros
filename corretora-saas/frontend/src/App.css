@@ -1,4 +1,4 @@
-
+/* App stylesheet - cleaned version to fix malformed @media block */
 
 #root {
   min-height: 100vh;
@@ -591,5 +591,15 @@ tbody tr:last-child td {
 .metric-card,.table-card{border:1px solid #e8ebf2!important;border-radius:15px!important;box-shadow:0 5px 22px #182c4c06!important}
 .metric-number{letter-spacing:-1.2px}
 .nav-item:focus-visible,.activity-primary:focus-visible,.activity-filters button:focus-visible{outline:3px solid #aab4ff;outline-offset:2px}
-@media(max-width:760px){.sidebar{width:210px}.main-content{margin-left:210px}}
-@media(max-width:620px){.sidebar{position:relative;width:auto;inset:auto;padding:16px}.brand{padding-bottom:15px}.nav-menu{grid-template-columns:repeat(2,minmax(0,1fr))}.sidebar-bottom{display:no[...]}
+
+@media (max-width:760px) {
+  .sidebar { width: 210px; }
+  .main-content { margin-left: 210px; }
+}
+
+@media (max-width:620px) {
+  .sidebar{position:relative;width:auto;inset:auto;padding:16px}
+  .brand{padding-bottom:15px}
+  .nav-menu{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sidebar-bottom{display:none}
+}
