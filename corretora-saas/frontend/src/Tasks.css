@@ -1,0 +1,63 @@
+/* Tasks.css - styles for Tasks / Activities new UI */
+
+.activities-page{max-width:1440px;margin:0 auto;padding:28px 36px 48px;color:#17243b}
+.activities-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:18px}
+.activities-kicker{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:#475569;font-weight:700}
+h1{margin:0;font-size:22px}
+.activities-controls{display:flex;align-items:center;gap:12px}
+.view-toggle{display:flex;border-radius:8px;overflow:hidden;border:1px solid #e6eef8}
+.view-toggle .toggle{background:transparent;border:0;padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.view-toggle .toggle.active{background:#eaf2ff;color:#0b6df0}
+.filters{display:flex;align-items:center;gap:8px}
+.primary-button{background:#0b6df0;color:#fff;border:0;padding:8px 12px;border-radius:8px;display:inline-flex;gap:8px;align-items:center}
+.secondary-button{background:transparent;border:1px solid #cbd5e1;padding:6px 10px;border-radius:8px}
+
+.tasks-main{margin-top:18px}
+.tasks-columns{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.tasks-column{background:#fff;padding:12px;border-radius:10px;border:1px solid #e6eef8;min-height:220px}
+.tasks-column h3{margin:0 0 10px;font-size:14px}
+.empty{color:#94a3b8;padding:14px;text-align:center}
+
+.task-card{display:flex;gap:12px;align-items:flex-start;padding:10px;border-radius:8px;border:1px solid #eef2f7;margin-bottom:10px;background:#fff}
+.task-card.done{opacity:0.6;text-decoration:line-through}
+.task-card.overdue{border-color:#fecaca;background:#fff5f5}
+.task-left{display:flex;align-items:center}
+.task-checkbox input{display:none}
+.task-checkbox .check-ui{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:6px;border:1px solid #e6eef8;background:#f8fafc}
+.task-main{flex:1}
+.task-title{font-weight:700}
+.task-meta{display:flex;flex-wrap:wrap;gap:8px;color:#64748b;font-size:13px;margin-top:6px;align-items:center}
+.meta-item{display:inline-flex;align-items:center;gap:6px}
+.badge.priority{padding:3px 8px;border-radius:999px;font-weight:700;font-size:11px}
+.badge.priority.low{background:#ecfccb;color:#365314}
+.badge.priority.medium{background:#fff4e6;color:#a16207}
+.badge.priority.high{background:#fee2e2;color:#991b1b}
+
+.task-actions{display:flex;flex-direction:column;gap:6px}
+.icon-btn{background:transparent;border:0;padding:6px;border-radius:6px;cursor:pointer}
+.icon-btn.destructive{color:#ef4444}
+
+/* modal reuse from Activities */
+.activity-modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:grid;place-items:center;z-index:50}
+.activity-modal{background:#fff;border-radius:12px;padding:18px;width:760px;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(2,6,23,0.2)}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.close-btn{background:transparent;border:0;font-size:18px;cursor:pointer}
+.policy-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.policy-form-grid label{display:block}
+.policy-form-grid label.full{grid-column:1/-1}
+.policy-form-grid input, .policy-form-grid select, .policy-form-grid textarea{width:100%;padding:8px;border-radius:8px;border:1px solid #e6eef8}
+.quick-picks{display:flex;gap:8px;margin-top:8px}
+.quick-picks button{background:#0b6df0;color:#fff;border:0;padding:6px 8px;border-radius:8px;cursor:pointer}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+
+/* calendar */
+.task-calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.calendar-day{background:#fff;padding:12px;border-radius:8px;border:1px solid #e6eef8;min-height:120px}
+.calendar-day-header{font-weight:700;margin-bottom:8px}
+.cal-task{display:flex;flex-direction:column;border:1px solid #eef2f7;padding:8px;border-radius:6px;margin-bottom:6px}
+.cal-task.done{opacity:0.6}
+.cal-task-time{font-weight:700;color:#0b6df0}
+.cal-task-title{font-size:14px}
+
+@media(max-width:1000px){.tasks-columns{grid-template-columns:repeat(2,1fr)}.task-calendar{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.tasks-columns{grid-template-columns:1fr}.task-calendar{grid-template-columns:1fr}}
