@@ -136,6 +136,43 @@ function App() {
     indicatorRef.current.style.opacity = "1";
   }
 
+  // keyboard navigation for the sidebar (Arrow keys, Home/End, Enter/Space)
+  function handleNavKeyDown(e: any) {
+    const menu = menuRef.current;
+    if (!menu) return;
+    const items = Array.from(menu.querySelectorAll<HTMLElement>(".nav-item"));
+    if (items.length === 0) return;
+    const activeEl = document.activeElement as HTMLElement | null;
+    let idx = items.indexOf(activeEl as HTMLElement);
+    if (idx === -1) {
+      idx = items.findIndex((i) => i.classList.contains("active"));
+      if (idx === -1) idx = 0;
+    }
+
+    if (e.key === "ArrowDown" || e.key === "ArrowRight") {
+      const next = items[(idx + 1) % items.length];
+      next.focus();
+      placeIndicator(next);
+      e.preventDefault();
+    } else if (e.key === "ArrowUp" || e.key === "ArrowLeft") {
+      const prev = items[(idx - 1 + items.length) % items.length];
+      prev.focus();
+      placeIndicator(prev);
+      e.preventDefault();
+    } else if (e.key === "Home") {
+      items[0].focus();
+      placeIndicator(items[0]);
+      e.preventDefault();
+    } else if (e.key === "End") {
+      items[items.length - 1].focus();
+      placeIndicator(items[items.length - 1]);
+      e.preventDefault();
+    } else if (e.key === "Enter" || e.key === " ") {
+      (document.activeElement as HTMLElement)?.click();
+      e.preventDefault();
+    }
+  }
+
   // ensure indicator follows the active item on route change / resize
   useEffect(() => {
     const menu = menuRef.current;
@@ -175,6 +212,10 @@ function App() {
         <nav
           className="nav-menu"
           ref={menuRef}
+          role="navigation"
+          aria-label="Menu Principal"
+          tabIndex={0}
+          onKeyDown={handleNavKeyDown}
           onMouseLeave={() => {
             const active = (menuRef.current?.querySelector('.nav-item.active') as HTMLElement) ?? (menuRef.current?.querySelector('.nav-item') as HTMLElement);
             placeIndicator(active ?? null);
@@ -186,6 +227,7 @@ function App() {
             onClick={() => navegarPara("dashboard")}
             onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
             onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={paginaAtual === "dashboard" ? "page" : undefined}
           >
             ▦ <span>Dashboard</span>
           </a>
@@ -196,6 +238,7 @@ function App() {
             onClick={() => navegarPara("pipeline")}
             onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
             onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={paginaAtual === "pipeline" ? "page" : undefined}
           >
             ⇄ <span>Funil de vendas</span>
           </a>
@@ -206,6 +249,7 @@ function App() {
             onClick={() => navegarPara("activities")}
             onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
             onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={paginaAtual === "activities" ? "page" : undefined}
           >
             ◷ <span>Atividades</span>
           </a>
@@ -215,6 +259,7 @@ function App() {
             href="#clientes"
             onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
             onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={undefined}
           >
             ♧ <span>Clientes</span>
           </a>
@@ -224,6 +269,7 @@ function App() {
             href="#relatorios"
             onMouseEnter={(e) => placeIndicator(e.currentTarget as HTMLElement)}
             onFocus={(e) => placeIndicator(e.currentTarget as HTMLElement)}
+            aria-current={undefined}
           >
             ▤ <span>Relatórios</span>
           </a>
